@@ -6,20 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
         tools:context=".LoginActivity">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Travel with Us"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+        />
+
+
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_below="@+id/titleTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:gravity="center"
+            android:src="@drawable/travel_log" />
 
         <EditText
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email Address"
-            android:layout_marginTop="16dp"/>
+            android:layout_below="@+id/logoImageView"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:inputType="textEmailAddress"
+            android:gravity="center"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -28,15 +57,38 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:layout_below="@+id/editTextEmail"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
+
 
         <Button
             android:id="@+id/buttonLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
             android:layout_below="@+id/editTextPassword"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="30dp"
+            android:background="@drawable/animating_button_background"
+            android:backgroundTintMode="screen"
+            android:text="Login"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonLogin"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:text="Register"
+            android:background="@drawable/animating_button_background"/>
 
     </RelativeLayout>
 

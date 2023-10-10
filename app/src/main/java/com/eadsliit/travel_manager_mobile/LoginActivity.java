@@ -39,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 // Get user input from EditText fields
                 String email = emailEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString();

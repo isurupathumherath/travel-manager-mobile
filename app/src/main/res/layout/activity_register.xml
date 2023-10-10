@@ -6,20 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
         tools:context=".RegisterActivity">
 
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register with Us"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
+            />
+
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="254dp"
+            android:layout_height="236dp"
+            android:layout_below="@+id/titleTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
+            android:gravity="center"
+            android:src="@drawable/register" />
+
+        <TextView
+            android:id="@+id/txtViewInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Information"
+            android:textSize="20sp"
+            android:layout_marginTop="0dp"
+            android:layout_below="@+id/logoImageView"
+            />
+
         <EditText
+            android:layout_below="@+id/txtViewInfo"
             android:id="@+id/editTextFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="First Name"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
 
         <EditText
             android:id="@+id/editTextLastName"
@@ -27,7 +63,13 @@
             android:layout_height="wrap_content"
             android:hint="Last Name"
             android:layout_below="@+id/editTextFirstName"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
 
         <EditText
             android:id="@+id/editTextNIC"
@@ -35,15 +77,38 @@
             android:layout_height="wrap_content"
             android:hint="NIC"
             android:layout_below="@+id/editTextLastName"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
+
+        <TextView
+            android:id="@+id/txtViewContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact Information"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/editTextNIC"
+            />
 
         <EditText
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email Address"
-            android:layout_below="@+id/editTextNIC"
-            android:layout_marginTop="8dp"/>
+            android:layout_below="@+id/txtViewContact"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_box"/>
 
         <EditText
             android:id="@+id/editTextMobile"
@@ -51,7 +116,13 @@
             android:layout_height="wrap_content"
             android:hint="Mobile Number"
             android:layout_below="@+id/editTextEmail"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -60,7 +131,13 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:layout_below="@+id/editTextMobile"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="#3524b5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="50"
+            android:background="@drawable/edittext_box"/>
 
         <Button
             android:id="@+id/buttonRegister"
@@ -68,8 +145,18 @@
             android:layout_height="wrap_content"
             android:text="Register"
             android:layout_below="@+id/editTextPassword"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:background="@drawable/animating_button_background"/>
 
+        <Button
+            android:id="@+id/buttonBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back to Login"
+            android:layout_below="@+id/buttonRegister"
+            android:layout_marginTop="16dp"
+            android:textSize="10sp"
+            android:background="@drawable/animating_button_background"/>
     </RelativeLayout>
 
 

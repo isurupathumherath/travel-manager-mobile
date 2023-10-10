@@ -6,66 +6,107 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private EditText editTextFirstName;
-    private EditText editTextLastName;
-    private EditText editTextEmail;
-    private Button btnUpdateProfile;
+    private EditText emailEditText;
+    private EditText firstNameEditText;
+    private EditText lastNameEditText;
+    private EditText nicEditText;
+    private EditText mobileEditText;
+    private Button updateProfileButton;
+
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and Firestore
         firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
-        editTextFirstName = findViewById(R.id.editTextFirstName);
-        editTextLastName = findViewById(R.id.editTextLastName);
-        editTextEmail = findViewById(R.id.editTextEmail);
-        btnUpdateProfile = findViewById(R.id.btnUpdateProfile);
+        emailEditText = findViewById(R.id.editTextEmail);
+        firstNameEditText = findViewById(R.id.editTextFirstName);
+        lastNameEditText = findViewById(R.id.editTextLastName);
+        nicEditText = findViewById(R.id.editTextNIC);
+        mobileEditText = findViewById(R.id.editTextMobile);
+        updateProfileButton = findViewById(R.id.updateProfileButton);
 
-        // Retrieve the current user's information
+        // Get the current user
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
-            String firstName = user.getPhoneNumber();
-            String email = user.getEmail();
+            // Set current values in EditText fields (optional)
+            emailEditText.setText(user.getEmail());
+            firstNameEditText.setText(user.getDisplayName());
 
-            // Populate the EditText fields with the retrieved data
-            editTextFirstName.setText(firstName);
-            editTextEmail.setText(email);
+            updateProfileButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Get updated values from EditText fields
+                    String newEmail = emailEditText.getText().toString().trim();
+                    String newFirstName = firstNameEditText.getText().toString().trim();
+                    String newLastName = lastNameEditText.getText().toString().trim();
+                    String newNic = nicEditText.getText().toString().trim();
+                    String newMobile = mobileEditText.getText().toString().trim();
+
+                    // Update the user's email in Firebase Auth
+                    user.updateEmail(newEmail)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        // Email update successful
+                                        // You can also update other profile fields as needed
+                                        updateUserInFirestore(user.getUid(), newFirstName, newLastName, newNic, newMobile);
+
+                                        Toast.makeText(EditProfileActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // Email update failed
+                                        Toast.makeText(EditProfileActivity.this, "Failed to update email.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            });
         }
+    }
 
-        btnUpdateProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Implement the logic to update the user profile here
-                // You can use Firebase Authentication's updateProfile method to update the user's profile information
-                // Example:
-                // String newFirstName = editTextFirstName.getText().toString();
-                // UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                //         .setDisplayName(newFirstName)
-                //         .build();
-                //
-                // user.updateProfile(profileUpdates)
-                //         .addOnCompleteListener(new OnCompleteListener<Void>() {
-                //             @Override
-                //             public void onComplete(@NonNull Task<Void> task) {
-                //                 if (task.isSuccessful()) {
-                //                     // Profile updated successfully
-                //                     finish(); // Close the activity after successful update
-                //                 } else {
-                //                     // Handle update failure
-                //                 }
-                //             }
-                //         });
-            }
-        });
+    private void updateUserInFirestore(String userId, String newFirstName, String newLastName, String newNic, String newMobile) {
+        // Update the user's data in Firestore (assuming you have a 'users' collection)
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("firstName", newFirstName);
+        updates.put("lastName", newLastName);
+        updates.put("nic", newNic);
+        updates.put("mobile", newMobile);
+
+        firestore.collection("users").document(userId)
+                .update(updates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Firestore update successful
+                            // You can add more actions or handle success as needed
+                        } else {
+                            // Firestore update failed
+                            // Handle the failure
+                        }
+                    }
+                });
     }
 }
