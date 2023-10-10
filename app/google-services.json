@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "266913790069",
+    "project_id": "sad-mobile-it20125516",
+    "storage_bucket": "sad-mobile-it20125516.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266913790069:android:f7ae8929a50c9a82a8a03c",
+        "android_client_info": {
+          "package_name": "com.eadsliit.travel_manager_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo_nRy59Q-JDKbcOgKJKcRf_sduwef3kE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
