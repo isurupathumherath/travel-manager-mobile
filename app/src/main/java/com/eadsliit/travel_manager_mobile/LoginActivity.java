@@ -45,6 +45,18 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Perform basic validation here (e.g., check if fields are not empty)
 
+                // Pass user id
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // Get the user's ID
+                    String userId = user.getUid();
+
+                    // Pass the user's ID to the main activity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
+                }
+
                 // Sign in with email and password using Firebase Authentication
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {

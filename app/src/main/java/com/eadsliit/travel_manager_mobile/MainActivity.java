@@ -19,6 +19,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
@@ -26,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnUpdateProfile;
     private FirebaseAuth firebaseAuth;
     private TextView welcomeTextView;
+    private FirebaseFirestore firestore;
+    private ListenerRegistration userListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,24 +43,45 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
-        btnLogout = findViewById(R.id.btnLogout);
-        btnUpdateProfile = findViewById(R.id.btnUpdateProfile);
+        btnLogout = findViewById(R.id.logoutButton);
+        btnUpdateProfile = findViewById(R.id.updateProfileButton);
 
         welcomeTextView = findViewById(R.id.textViewWelcome);
 
+        // Initialize Firebase Auth and Firestore
+        firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
+        // Get the user's ID from the Intent
+        String userId = getIntent().getStringExtra("userId");
+
         // Retrieve the current user's information
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        System.out.println("USER ID: " + user);
+        System.out.println("USER ID: " + userId);
 
-        if (user != null) {
-            String firstName = user.getDisplayName();
-            System.out.println("WELCOME" + firstName);
+        if (userId != null) {
+            // Listen for changes to the user document in FireStore
+            userListener = firestore.collection("users").document(userId)
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                            if (error != null) {
+                                // Handle the error
+                                return;
+                            }
 
-            // Display a welcome message with the user's First Name
-            welcomeTextView.setText("Welcome, " + firstName + "!");
+                            if (documentSnapshot != null && documentSnapshot.exists()) {
+                                // User document exists, fetch and display data
+                                String firstName = documentSnapshot.getString("firstName");
+                                String lastName = documentSnapshot.getString("lastName");
+
+                                welcomeTextView.setText("Welcome, " + firstName + "!");
+                                System.out.println("Welcome, " + firstName + "!");
+                            }
+                        }
+                    });
         } else {
             // Display a welcome message with the user's First Name
-            welcomeTextView.setText("NO USER !");
+            welcomeTextView.setText("NO USER ID FOUND!");
         }
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -79,5 +108,14 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Remove the Firestore listener when the activity is destroyed
+        if (userListener != null) {
+            userListener.remove();
+        }
     }
 }
