@@ -8,13 +8,6 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/logoIcon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/travel_log" />
-
-    <ImageView
         android:layout_below="@+id/logoIcon"
         android:id="@+id/userIcon"
         android:layout_width="47dp"

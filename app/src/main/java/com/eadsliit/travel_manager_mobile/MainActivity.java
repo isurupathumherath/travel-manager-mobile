@@ -2,6 +2,8 @@ package com.eadsliit.travel_manager_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout.LayoutParams;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +86,56 @@ public class MainActivity extends AppCompatActivity {
                     });
         } else {
             // Display a welcome message with the user's First Name
-            welcomeTextView.setText("NO USER ID FOUND!");
+            welcomeTextView.setText("Welcome Isuru Herath");
+        }
+
+        TableLayout tableLayout = findViewById(R.id.tableLayout);
+
+        String[][] data = {
+                {"1", "Business Trip", "2023-10-15"},
+                {"2", "Vacation", "2023-11-05"},
+                {"3", "Conference", "2023-12-20"}
+        };
+
+        for (String[] row : data) {
+            TableRow newRow = new TableRow(this);
+
+            for (String value : row) {
+                TextView cell = new TextView(this);
+                cell.setText(value);
+                cell.setTextSize(16);
+                cell.setPadding(25, 0, 0, 0);
+                cell.setBackground(getResources().getDrawable(R.drawable.table_border));
+                newRow.addView(cell);
+            }
+
+            Button updateButton = new Button(this);
+            updateButton.setText("Update");
+            updateButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.update, 0, 0, 0);
+            updateButton.setPadding(0,0,0,0);
+            updateButton.setLayoutParams(new LayoutParams(25, 25));
+            updateButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Handle the Update button click for this row
+                }
+            });
+            newRow.addView(updateButton);
+
+            Button deleteButton = new Button(this);
+            deleteButton.setText("Delete");
+            deleteButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.update, 0, 0, 0);
+            deleteButton.setPadding(0,0,0,0);
+            deleteButton.setLayoutParams(new LayoutParams(25, 25));
+            deleteButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Handle the Delete button click for this row
+                }
+            });
+            newRow.addView(deleteButton);
+
+            tableLayout.addView(newRow);
         }
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
