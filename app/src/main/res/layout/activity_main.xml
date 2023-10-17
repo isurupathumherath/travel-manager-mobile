@@ -33,56 +33,84 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_toStartOf="@+id/userIcon"
-        android:text="Welcome, User!"
+        android:text="Welcome, Alex ...!"
         android:textSize="25sp" />
 
-    <TableLayout
-        android:layout_marginTop="100dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tableLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/userIcon">
+    <TextView
+        android:id="@+id/textViewTrainSchedule"
+        android:layout_width="156dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/logoIcon"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/userIcon"
+        android:text="Train Schedule"
+        android:textSize="18sp" />
 
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ID"
-                android:textSize="18sp"
-                android:paddingStart="25dp"
-                android:paddingEnd="30dp"
-                android:background="@drawable/table_border"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="382dp"
+        android:layout_height="220dp"
+        android:layout_marginLeft="0dp"
+        android:layout_below="@+id/textViewTrainSchedule" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Travel"
-                android:paddingStart="25dp"
-                android:textSize="18sp"
-                android:paddingEnd="125dp"
-                android:background="@drawable/table_border"/>
+<!--    <TableLayout-->
+<!--        android:layout_marginTop="0dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/tableLayout"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_below="@+id/textViewTrainSchedule">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date"
-                android:paddingStart="25dp"
-                android:textSize="18sp"
-                android:paddingEnd="45dp"
-                android:background="@drawable/table_border"/>
-        </TableRow>
-    </TableLayout>
+<!--        <TableRow>-->
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="Name"-->
+<!--                android:textSize="10sp"-->
+<!--                android:paddingStart="10dp"-->
+<!--                android:paddingEnd="10dp"-->
+<!--                android:background="@drawable/table_border"/>-->
 
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="From"-->
+<!--                android:textSize="10sp"-->
+<!--                android:background="@drawable/table_border"/>-->
 
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="To"-->
+<!--                android:paddingStart="35dp"-->
+<!--                android:textSize="10sp"-->
+<!--                android:paddingEnd="35dp"-->
+<!--                android:background="@drawable/table_border"/>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text=""-->
+<!--                android:paddingStart="35dp"-->
+<!--                android:textSize="10sp"-->
+<!--                android:paddingEnd="35dp" />-->
+<!--        </TableRow>-->
+<!--    </TableLayout>-->
 
     <Button
         android:id="@+id/updateProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Booking History"
-        android:layout_below="@+id/tableLayout"
-        android:layout_marginTop="200dp" />
+        android:layout_below="@+id/recyclerView"
+        android:layout_marginTop="50dp" />
 
     <Button
         android:id="@+id/logoutButton"

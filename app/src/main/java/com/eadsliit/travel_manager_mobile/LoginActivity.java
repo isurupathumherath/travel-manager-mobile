@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,70 +18,114 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
-    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
-
         // Initialize UI elements
         emailEditText = findViewById(R.id.editTextEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         loginButton = findViewById(R.id.buttonLogin);
 
-        // Handle login button click
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        // Get user input from EditText fields
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString();
+
+        class CreateUserTask extends AsyncTask<Void, Void, Boolean> {
+
             @Override
-            public void onClick(View view) {
+            protected Boolean doInBackground(Void... voids) {
 
-                // Get user input from EditText fields
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString();
-
-                // Perform basic validation here (e.g., check if fields are not empty)
-
-                // Pass user id
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if (emailEditText.getText() != null) {
                     // Get the user's ID
-                    String userId = user.getUid();
+                    String emailAddress = emailEditText.getText().toString();
 
-                    // Pass the user's ID to the main activity
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("userId", userId);
-                    startActivity(intent);
+                    System.out.println("Email Address: " + emailAddress);
                 }
 
-                // Sign in with email and password using Firebase Authentication
-                firebaseAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // User login successful
-                                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                try {
+                    // Define the URL and request body
+                    String apiUrlRegister = "https://eafd-116-206-246-73.ngrok-free.app/api/User/login";
 
-                                    // Show a login success message
-                                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    String requestBodyRegister = "{\n" +
+                            "  \"id\": {},\n" +
+                            "  \"username\": \"" + emailEditText.getText() + "\",\n" +
+                            "  \"password\": \" " + passwordEditText.getText() + "\",\n" +
+                            "}";
 
-                                    // Redirect to the main activity
-                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                    finish(); // Close the LoginActivity so that the user cannot go back to it
-                                } else {
-                                    // User login failed
-                                    Toast.makeText(LoginActivity.this, "Login failed. Please check your credentials.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                    URL urlLogin = new URL(apiUrlRegister);
+                    HttpURLConnection connection = (HttpURLConnection) urlLogin.openConnection();
+
+                    // Set up the HTTP request
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type", "application/json; utf-8");
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.setDoOutput(true);
+
+                    // Write the request body to the connection
+                    try (OutputStream os = connection.getOutputStream()) {
+                        byte[] input = requestBodyRegister.getBytes("UTF-8");
+                        os.write(input, 0, input.length);
+                    }
+
+                    // Get the HTTP response code
+                    int responseCode = connection.getResponseCode();
+
+                    // Check if the user was created successfully (usually HTTP status 200)
+                    return responseCode == HttpURLConnection.HTTP_OK;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean userCreatedSuccessfully) {
+                if (userCreatedSuccessfully) {
+                    // User created successfully
+                    Log.d("CreateUserActivity", "User Login successfully");
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                } else {
+                    // Handle the error
+                    Log.e("CreateUserActivity", "Failed to Login");
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
+            }
+        }
+
+        // Login
+        Button loginButton = findViewById(R.id.buttonLogin);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CreateUserTask().execute();
             }
         });
+
+        // Go to Register
+        Button registerBtn = findViewById(R.id.buttonRegister);
+        registerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Redirect to the main activity
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                finish();
+            }
+        });
+
+
     }
 }

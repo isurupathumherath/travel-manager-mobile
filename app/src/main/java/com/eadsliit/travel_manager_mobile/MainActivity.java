@@ -2,6 +2,7 @@ package com.eadsliit.travel_manager_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -11,6 +12,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +25,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.annotations.Nullable;
@@ -31,112 +38,49 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private Button btnLogout;
     private Button btnUpdateProfile;
+
+    private ImageView userIcon;
     private FirebaseAuth firebaseAuth;
     private TextView welcomeTextView;
     private FirebaseFirestore firestore;
     private ListenerRegistration userListener;
+    private RecyclerView recyclerView;
+    private TrainScheduleAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
+        fetchData();
 
         btnLogout = findViewById(R.id.logoutButton);
-        btnUpdateProfile = findViewById(R.id.updateProfileButton);
+        userIcon = findViewById(R.id.userIcon);
 
         welcomeTextView = findViewById(R.id.textViewWelcome);
 
-        // Initialize Firebase Auth and Firestore
-        firebaseAuth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance();
-
         // Get the user's ID from the Intent
-        String userId = getIntent().getStringExtra("userId");
+        String emailAddress = getIntent().getStringExtra("emailAddress");
 
         // Retrieve the current user's information
-        System.out.println("USER ID: " + userId);
+        System.out.println("USER ID: " + emailAddress);
 
-        if (userId != null) {
-            // Listen for changes to the user document in FireStore
-            userListener = firestore.collection("users").document(userId)
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-                            if (error != null) {
-                                // Handle the error
-                                return;
-                            }
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-                            if (documentSnapshot != null && documentSnapshot.exists()) {
-                                // User document exists, fetch and display data
-                                String firstName = documentSnapshot.getString("firstName");
-                                String lastName = documentSnapshot.getString("lastName");
-
-                                welcomeTextView.setText("Welcome, " + firstName + "!");
-                                System.out.println("Welcome, " + firstName + "!");
-                            }
-                        }
-                    });
-        } else {
-            // Display a welcome message with the user's First Name
-            welcomeTextView.setText("Welcome Isuru Herath");
-        }
-
-        TableLayout tableLayout = findViewById(R.id.tableLayout);
-
-        String[][] data = {
-                {"1", "Business Trip", "2023-10-15"},
-                {"2", "Vacation", "2023-11-05"},
-                {"3", "Conference", "2023-12-20"}
-        };
-
-        for (String[] row : data) {
-            TableRow newRow = new TableRow(this);
-
-            for (String value : row) {
-                TextView cell = new TextView(this);
-                cell.setText(value);
-                cell.setTextSize(16);
-                cell.setPadding(25, 0, 0, 0);
-                cell.setBackground(getResources().getDrawable(R.drawable.table_border));
-                newRow.addView(cell);
-            }
-
-            Button updateButton = new Button(this);
-            updateButton.setText("Update");
-            updateButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.update, 0, 0, 0);
-            updateButton.setPadding(0,0,0,0);
-            updateButton.setLayoutParams(new LayoutParams(25, 25));
-            updateButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Handle the Update button click for this row
-                }
-            });
-            newRow.addView(updateButton);
-
-            Button deleteButton = new Button(this);
-            deleteButton.setText("Delete");
-            deleteButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.update, 0, 0, 0);
-            deleteButton.setPadding(0,0,0,0);
-            deleteButton.setLayoutParams(new LayoutParams(25, 25));
-            deleteButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Handle the Delete button click for this row
-                }
-            });
-            newRow.addView(deleteButton);
-
-            tableLayout.addView(newRow);
-        }
+        List<TrainScheduleItem> trainScheduleItemList = new ArrayList<>();
+        adapter = new TrainScheduleAdapter(trainScheduleItemList);
+        recyclerView.setAdapter(adapter);
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,32 +88,55 @@ public class MainActivity extends AppCompatActivity {
                 // Show a Logout message
                 Toast.makeText(MainActivity.this, "You are logging out!", Toast.LENGTH_SHORT).show();
 
-
-                // Sign out the current user
-                firebaseAuth.signOut();
-
                 // Redirect to the main activity
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
             }
         });
 
-        btnUpdateProfile.setOnClickListener(new View.OnClickListener() {
+        userIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Redirect to the update activity
                 startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
                 finish();
             }
         });
+
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Remove the Firestore listener when the activity is destroyed
-        if (userListener != null) {
-            userListener.remove();
-        }
+    private void fetchData() {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String apiUrl = "https://eafd-116-206-246-73.ngrok-free.app/api/TrainSchedule";
+
+        // Create a request to fetch the data
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, apiUrl, null, response -> {
+            try {
+                List<TrainScheduleItem> trainScheduleItemList = new ArrayList<>();
+                for (int i = 0; i < response.length(); i++) {
+                    JSONObject jsonObject = response.getJSONObject(i);
+                    TrainScheduleItem item = new TrainScheduleItem();
+
+                    item.setTrainId(jsonObject.getString("trainId"));
+                    item.setName(jsonObject.getString("name"));
+                    item.setStartStation(jsonObject.getString("startStation"));
+                    item.setEndStations(jsonObject.getString("endStations"));
+                    item.setDepartureTime(jsonObject.getString("departureTime"));
+                    item.setArrivalTime(jsonObject.getString("arrivalTime"));
+                    item.setIsActive(jsonObject.getString("isActive"));
+
+                    trainScheduleItemList.add(item);
+                }
+                adapter = new TrainScheduleAdapter(trainScheduleItemList);
+                recyclerView.setAdapter(adapter);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Handle errors
+            Log.e("FetchData", "Error fetching data: " + error.getMessage());
+        });
+
+        requestQueue.add(jsonArrayRequest);
     }
+
 }
